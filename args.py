@@ -1,5 +1,5 @@
-img_dir = '../data/segmentation_full/images'
-mask_dir ='../data/segmentation_full/masks'
+img_dir = './data/segmentation_full/images'
+mask_dir ='./data/segmentation_full/masks'
 out_dir = './runs'
 # img_dir = '../data/segmentation/images'
 # mask_dir ='../data/segmentation/masks'
