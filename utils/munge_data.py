@@ -17,8 +17,12 @@ SEG_PATH_FULL = './data/segmentation_full'
 os.makedirs(SEG_PATH, exist_ok=True)
 os.makedirs(SEG_PATH_FULL, exist_ok=True)
 os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(os.path.join(SEG_PATH_FULL, 'images'), exist_ok=True)
+os.makedirs(os.path.join(SEG_PATH_FULL+ 'masks'), exist_ok=True)
 
 def process_data(images, data_type="train"):
+    os.makedirs(os.path.join(SEG_PATH_FULL, f'images/{data_type}/'), exist_ok=True)
+    os.makedirs(os.path.join(SEG_PATH_FULL, f'masks/{data_type}/'), exist_ok=True)
     for im in tqdm(images, total=len(images)):
 
         img = imageio.imread(im['coco_url'])
