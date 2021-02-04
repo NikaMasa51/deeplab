@@ -32,7 +32,7 @@ class deeplab_engine:
         self.img_dir = arg.img_dir
         self.mask_dir = arg.mask_dir
         self.out_dir = arg.out_dir
-        os.makedirs(out_dir, exist_ok=True)
+        os.makedirs(self.out_dir, exist_ok=True)
         
         self.n_epochs = arg.n_epochs
         self.n_classes = arg.n_classes
@@ -52,8 +52,13 @@ class deeplab_engine:
     
     def init_model(self):
         print("initilizing network\n")
-        
-        self.model = get_gpu_parallel(createDeepLabv3()).to(self.device)
+
+        if torch.cuda.device_count() > 1:
+            print("Let's use", torch.cuda.device_count(), "GPUs!")
+            # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+            self.model = nn.DataParallel(createDeepLabv3()).to(self.device)
+        else:
+            self.model = createDeepLabv3().to(self.device)
 
         # self.optim = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
         self.optim = torch.optim.SGD(self.model.parameters(), lr=self.lr)
