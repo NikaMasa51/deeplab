@@ -123,15 +123,6 @@ class deeplab_engine:
                 iousSum += float(intersection) / float(max(union, 1))
         return iousSum/n_classes
 
-    def get_gpu_parallel(model):
-
-        if torch.cuda.device_count() > 1:
-            print("Let's use", torch.cuda.device_count(), "GPUs!")
-            # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        model = nn.DataParallel(model)
-
-        return model
-    
     def train(self, ckpt=None):
         # if ckpt != None:
         #     # load_check_point
