@@ -27,7 +27,7 @@ torch.manual_seed(seed)
 
 
 class deeplab_engine:
-    def __init__(self, arg, device):
+    def __init__(self, arg, device, device_ids= None):
 
         self.img_dir = arg.img_dir
         self.mask_dir = arg.mask_dir
@@ -36,6 +36,7 @@ class deeplab_engine:
         
         self.n_epochs = arg.n_epochs
         self.n_classes = arg.n_classes
+        self.device_ids = arg.device_ids
 
         self.batch_size = arg.batch_size
         self.lr = arg.lr
@@ -44,7 +45,7 @@ class deeplab_engine:
 
         self.im_size = arg.im_size
 
-        self.classes = ["broccoli"]
+        self.classes = arg.classes
 
         self.device = device
 
@@ -56,7 +57,8 @@ class deeplab_engine:
         if torch.cuda.device_count() > 1:
             print("Let's use", torch.cuda.device_count(), "GPUs!")
             # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-            self.model = nn.DataParallel(createDeepLabv3()).to(self.device)
+            self.model = createDeepLabv3()
+            self.model = nn.DataParallel(self.model, device_ids=self.device_ids).to(self.device)
         else:
             self.model = createDeepLabv3().to(self.device)
 
@@ -304,7 +306,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # device = "cpu"
-    
+
     import args
 
     engine = deeplab_engine(args, device)
