@@ -130,9 +130,11 @@ if __name__ == "__main__":
     images = coco.loadImgs(imgIds)
     
     # train, validation split
+    # train and validation can be divided by 8 (train:validation=9:1)
     train, valid = model_selection.train_test_split(
         images,
-        test_size=0.1,
+        train_size=len(images)//(10*8)*(9*8),
+        test_size=len(images)//(10*8)*(1*8),
         random_state=42,
         shuffle=True        
     )
