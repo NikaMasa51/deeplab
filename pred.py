@@ -74,5 +74,5 @@ class Interface:
 if __name__ == "__main__":
     device = "cuda"
     import args
-    interface = Interface('./checkpoints/full/best_model.tar', './test/test', out_dir='./test/result', device=device) 
+    interface = Interface('./run/best_model.tar', './test/test', out_dir='./test/result', device=device) 
     interface.pred()
