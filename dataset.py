@@ -7,7 +7,50 @@ from torchvision import  transforms
 import numpy as np
 from PIL import Image
 
-class Broccoli(torch.utils.data.Dataset):
+from data_augmentation import Compose, Scale, RandomRotation, RandomMirror, Resize, Normalize_Tensor
+
+
+class DataTransform():
+    """
+    画像とアノテーションの前処理クラス。訓練時と検証時で異なる動作をする。
+    画像のサイズをinput_size x input_sizeにする。
+    訓練時はデータオーギュメンテーションする。
+    Attributes
+    ----------
+    input_size : int
+        リサイズ先の画像の大きさ。
+    color_mean : (R, G, B)
+        各色チャネルの平均値。
+    color_std : (R, G, B)
+        各色チャネルの標準偏差。
+    """
+
+    def __init__(self, input_size, color_mean, color_std):
+        self.data_transform = {
+            'train': Compose([
+                Scale(scale=[0.5, 1.5]),  # 画像の拡大
+                RandomRotation(angle=[-10, 10]),  # 回転
+                RandomMirror(),  # ランダムミラー
+                Resize(input_size),  # リサイズ(input_size)
+                Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
+            ]),
+            'val': Compose([
+                Resize(input_size),  # リサイズ(input_size)
+                Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
+            ])
+        }
+
+    def __call__(self, phase, img, anno_class_img):
+        """
+        Parameters
+        ----------
+        phase : 'train' or 'val'
+            前処理のモードを指定。
+        """
+        return self.data_transform[phase](img, anno_class_img)
+
+
+class DataSet(torch.utils.data.Dataset):
     def __init__(self, img_dir, mask_dir, size=1500, transforms=transforms.ToTensor(), data_type="train"):
         super().__init__()
         self.img_dir = img_dir
@@ -35,11 +78,28 @@ class Broccoli(torch.utils.data.Dataset):
         # print(f'{self.img_dir}/{self.data_type}/{img_id}')
         mask = self.readImage(f'{self.mask_dir}/{self.data_type}/{img_id}').convert("L")
         if self.transforms:
-            img = self.transforms(img)
-            mask = self.transforms(mask)
+            img, mask = self.pull_item(index)
+            # img = self.transforms(img)
+            # mask = self.transforms(mask)
         sample = {"image": img, "mask": mask}
                  
         return sample 
+
+    def pull_item(self, index):
+        '''画像のTensor形式のデータ、アノテーションを取得する'''
+
+        # 1. 画像読み込み
+        image_file_path = self.img_list[index]
+        img = Image.open(image_file_path)   # [高さ][幅][色RGB]
+
+        # 2. アノテーション画像読み込み
+        anno_file_path = self.mask_list[index]
+        anno_class_img = Image.open(anno_file_path)   # [高さ][幅]
+
+        # 3. 前処理を実施
+        img, anno_class_img = self.transforms(self.data_type, img, anno_class_img)
+
+        return img, anno_class_img
         
         
 class Prediction(torch.utils.data.Dataset):

@@ -20,10 +20,12 @@ from torch import optim
 from torch.autograd import Variable
 
 from model import createDeepLabv3
-from dataset import Broccoli
+from dataset import DataSet, DataTransform
 
 seed = 1123
 torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
 
 
 class deeplab_engine:
@@ -79,9 +81,17 @@ class deeplab_engine:
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
+
+
+        # Dataset作成
+        # (RGB)の色の平均値と標準偏差
+        color_mean = (0.485, 0.456, 0.406)
+        color_std = (0.229, 0.224, 0.225)
         
-        self.train_ = Broccoli(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train")
-        self.valid_ = Broccoli(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation")
+        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, transforms=DataTransform(
+                      input_size=self.im_size, color_mean=color_mean, color_std=color_std), data_type="train")
+        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, transforms=DataTransform(
+                      input_size=self.im_size, color_mean=color_mean, color_std=color_std), data_type="validation")
 
         self.dataloader_train = DataLoader(
             self.train_,
