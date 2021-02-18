@@ -24,8 +24,8 @@ from dataset import DataSet, DataTransform
 
 seed = 1123
 torch.manual_seed(seed)
-np.random.seed(seed)
-random.seed(seed)
+# np.random.seed(seed)
+# random.seed(seed)
 
 
 class deeplab_engine:
