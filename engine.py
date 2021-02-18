@@ -62,7 +62,7 @@ class deeplab_engine:
             self.model = createDeepLabv3(outputchannels=self.n_classes)
             self.model = nn.DataParallel(self.model, device_ids=self.device_ids).to(self.device)
         else:
-            self.model = createDeepLabv3(self.n_classes).to(self.device)
+            self.model = createDeepLabv3(outputchannels=self.n_classes).to(self.device)
 
         # self.optim = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
         self.optim = torch.optim.SGD(self.model.parameters(), lr=self.lr)
