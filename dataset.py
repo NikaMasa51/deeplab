@@ -7,7 +7,7 @@ from torchvision import  transforms
 import numpy as np
 from PIL import Image
 
-from data_augmentation import Compose, Scale, RandomRotation, RandomMirror, Resize, Normalize_Tensor
+from data_augmentation import Compose, Scale, RandomRotation, RandomMirror, Resize, ToTensor, Normalize_Tensor
 
 
 class DataTransform():
@@ -28,15 +28,17 @@ class DataTransform():
     def __init__(self, input_size, color_mean, color_std):
         self.data_transform = {
             'train': Compose([
-                Scale(scale=[0.5, 1.5]),  # 画像の拡大
+                # Scale(scale=[0.5, 1.5]),  # 画像の拡大
                 RandomRotation(angle=[-10, 10]),  # 回転
                 RandomMirror(),  # ランダムミラー
                 Resize(input_size),  # リサイズ(input_size)
-                Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
+                ToTensor()
+                # Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
             ]),
-            'val': Compose([
+            'validation': Compose([
                 Resize(input_size),  # リサイズ(input_size)
-                Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
+                ToTensor()
+                # Normalize_Tensor(color_mean, color_std)  # 色情報の標準化とテンソル化
             ])
         }
 
@@ -44,7 +46,7 @@ class DataTransform():
         """
         Parameters
         ----------
-        phase : 'train' or 'val'
+        phase : 'train' or 'validation'
             前処理のモードを指定。
         """
         return self.data_transform[phase](img, anno_class_img)
@@ -90,11 +92,13 @@ class DataSet(torch.utils.data.Dataset):
 
         # 1. 画像読み込み
         image_file_path = self.img_list[index]
-        img = Image.open(image_file_path)   # [高さ][幅][色RGB]
+        img = Image.open(f'{self.img_dir}/{self.data_type}/{image_file_path}')   # [高さ][幅][色RGB]
+        # print('img', img)
 
         # 2. アノテーション画像読み込み
         anno_file_path = self.mask_list[index]
-        anno_class_img = Image.open(anno_file_path)   # [高さ][幅]
+        anno_class_img = Image.open(f'{self.mask_dir}/{self.data_type}/{anno_file_path}')  # [高さ][幅]
+        # print('anno_class_img', anno_class_img)
 
         # 3. 前処理を実施
         img, anno_class_img = self.transforms(self.data_type, img, anno_class_img)

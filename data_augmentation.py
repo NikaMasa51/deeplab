@@ -60,6 +60,7 @@ class Scale(object):
         else:
             # input_sizeよりも短い辺はpaddingする
             p_palette = anno_class_img.copy().getpalette()
+            print('type:', type(anno_class_img))
 
             img_original = img.copy()
             anno_class_img_original = anno_class_img.copy()
@@ -126,6 +127,18 @@ class Resize(object):
 
         return img, anno_class_img
 
+class ToTensor(object):
+    """tensorに変換するクラス"""
+
+    def __call__(self, img, anno_class_img):
+
+        # PIL画像をTensorに。
+        img = transforms.ToTensor(img)
+
+        # PIL画像をTensorに。
+        anno_class_img = transforms.ToTensor(anno_class_img)
+
+        return img, anno_class_img
 
 class Normalize_Tensor(object):
     def __init__(self, color_mean, color_std):

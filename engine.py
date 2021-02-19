@@ -20,7 +20,8 @@ from torch import optim
 from torch.autograd import Variable
 
 from model import createDeepLabv3
-from dataset import DataSet, DataTransform
+from dataset import DataSet
+# , DataTransform
 
 seed = 1123
 torch.manual_seed(seed)
@@ -62,7 +63,7 @@ class deeplab_engine:
             self.model = createDeepLabv3(outputchannels=self.n_classes)
             self.model = nn.DataParallel(self.model, device_ids=self.device_ids).to(self.device)
         else:
-            self.model = createDeepLabv3(outputchannels=self.n_classes).to(self.device)
+            self.model = createDeepLabv3(self.n_classes).to(self.device)
 
         # self.optim = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
         self.optim = torch.optim.SGD(self.model.parameters(), lr=self.lr)
@@ -88,10 +89,8 @@ class deeplab_engine:
         color_mean = (0.485, 0.456, 0.406)
         color_std = (0.229, 0.224, 0.225)
         
-        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, transforms=DataTransform(
-                      input_size=self.im_size, color_mean=color_mean, color_std=color_std), data_type="train")
-        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, transforms=DataTransform(
-                      input_size=self.im_size, color_mean=color_mean, color_std=color_std), data_type="validation")
+        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train")
+        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation")
 
         self.dataloader_train = DataLoader(
             self.train_,
