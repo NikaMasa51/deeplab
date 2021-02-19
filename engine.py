@@ -25,8 +25,6 @@ from dataset import DataSet
 
 seed = 1123
 torch.manual_seed(seed)
-# np.random.seed(seed)
-# random.seed(seed)
 
 
 class deeplab_engine:
@@ -60,10 +58,10 @@ class deeplab_engine:
         if torch.cuda.device_count() > 1:
             print("Let's use", torch.cuda.device_count(), "GPUs!")
             # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-            self.model = createDeepLabv3(outputchannels=self.n_classes)
+            self.model = createDeepLabv3()
             self.model = nn.DataParallel(self.model, device_ids=self.device_ids).to(self.device)
         else:
-            self.model = createDeepLabv3(self.n_classes).to(self.device)
+            self.model = createDeepLabv3().to(self.device)
 
         # self.optim = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
         self.optim = torch.optim.SGD(self.model.parameters(), lr=self.lr)
@@ -89,10 +87,10 @@ class deeplab_engine:
         color_mean = (0.485, 0.456, 0.406)
         color_std = (0.229, 0.224, 0.225)
         
-        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train", \
-                               transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
-        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation", \
-                               transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
+        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train")
+#                                transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
+        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation")
+#                                transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
 
         self.dataloader_train = DataLoader(
             self.train_,
@@ -202,7 +200,7 @@ class deeplab_engine:
                 # Use a classification threshold of 0.1
                 f1_score_ = f1_score(y_true > 0, y_pred > 0.1)         
                 roc_auc_score_ = roc_auc_score(y_true.astype('uint8'), y_pred)
-                miou = self.iou_mean(pred_masks, ground_truth, n_classes=self.n_classes)
+                miou = self.iou_mean(pred_masks, ground_truth)
 
                 # Update gradients
                 train_loss.backward()
@@ -250,7 +248,7 @@ class deeplab_engine:
                     # Use a classification threshold of 0.1
                     f1_score_ = f1_score(y_true > 0, y_pred > 0.1)
                     roc_auc_score_ = roc_auc_score(y_true.astype('uint8'), y_pred)
-                    miou = self.iou_mean(pred_masks, ground_truth, n_classes=self.n_classes)
+                    miou = self.iou_mean(pred_masks, ground_truth)
                     
                     # Keep track of the losses
                     batch_loss += valid_loss.item()
