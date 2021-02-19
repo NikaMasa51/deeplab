@@ -89,8 +89,10 @@ class deeplab_engine:
         color_mean = (0.485, 0.456, 0.406)
         color_std = (0.229, 0.224, 0.225)
         
-        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train")
-        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation")
+        self.train_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="train", \
+                               transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
+        self.valid_ = DataSet(img_dir=self.img_dir, mask_dir=self.mask_dir, size=self.im_size, data_type="validation", \
+                               transform=DataTransform(input_size=1024, color_mean=color_mean, color_std=color_std))
 
         self.dataloader_train = DataLoader(
             self.train_,

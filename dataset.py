@@ -53,7 +53,7 @@ class DataTransform():
 
 
 class DataSet(torch.utils.data.Dataset):
-    def __init__(self, img_dir, mask_dir, size=1500, transforms=transforms.ToTensor(), data_type="train"):
+    def __init__(self, img_dir, mask_dir, size=1500, data_type="train", transforms=transforms.ToTensor()):
         super().__init__()
         self.img_dir = img_dir
         self.mask_dir = mask_dir
