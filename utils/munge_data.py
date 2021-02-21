@@ -130,7 +130,7 @@ if __name__ == "__main__":
     images = coco.loadImgs(imgIds)
 
     # batch size
-    batch_size = 16
+    batch_size = 8
     
     # train, validation split
     # train and validation can be divided by batch size (train:validation=9:1)
