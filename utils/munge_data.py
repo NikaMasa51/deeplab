@@ -133,7 +133,7 @@ if __name__ == "__main__":
     batch_size = 8
     
     # train, validation split
-    # train and validation can be divided by batch size (train:validation=9:1)
+    # train and validation can be divided by batch size (train:validation=8:2)
     train, valid = model_selection.train_test_split(
         images,
         train_size=len(images)//(5*batch_size)*(4*batch_size),
