@@ -19,16 +19,16 @@ os.makedirs(SEG_PATH_SUB, exist_ok=True)
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(os.path.join(SEG_PATH_FULL, 'images'), exist_ok=True)
 os.makedirs(os.path.join(SEG_PATH_FULL, 'masks'), exist_ok=True)
-# os.makedirs(os.path.join(SEG_PATH_SUB, 'images'), exist_ok=True)
-# os.makedirs(os.path.join(SEG_PATH_SUB, 'masks'), exist_ok=True)
+os.makedirs(os.path.join(SEG_PATH_SUB, 'images'), exist_ok=True)
+os.makedirs(os.path.join(SEG_PATH_SUB, 'masks'), exist_ok=True)
 os.makedirs(os.path.join(OUTPUT_PATH, 'images'), exist_ok=True)
 os.makedirs(os.path.join(OUTPUT_PATH, 'labels'), exist_ok=True)
 
 def process_data(images, data_type="train"):
     os.makedirs(os.path.join(SEG_PATH_FULL, f'images/{data_type}/'), exist_ok=True)
     os.makedirs(os.path.join(SEG_PATH_FULL, f'masks/{data_type}/'), exist_ok=True)
-    # os.makedirs(os.path.join(SEG_PATH_SUB, f'images/{data_type}/'), exist_ok=True)
-    # os.makedirs(os.path.join(SEG_PATH_SUB, f'masks/{data_type}/'), exist_ok=True)
+    os.makedirs(os.path.join(SEG_PATH_SUB, f'images/{data_type}/'), exist_ok=True)
+    os.makedirs(os.path.join(SEG_PATH_SUB, f'masks/{data_type}/'), exist_ok=True)
     os.makedirs(os.path.join(OUTPUT_PATH, f'images/{data_type}/'), exist_ok=True)
     os.makedirs(os.path.join(OUTPUT_PATH, f'labels/{data_type}/'), exist_ok=True)
     for im in tqdm(images, total=len(images)):
@@ -45,62 +45,62 @@ def process_data(images, data_type="train"):
         
         #yolo data
         
-        # yolo_data = []
-        # for i in range(len(anns)):
-        #     cat = anns[i]["category_id"] - 1
-        #     xmin = anns[i]["bbox"][0]
-        #     ymin = anns[i]["bbox"][1]
-        #     xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
-        #     ymax = anns[i]["bbox"][3] + anns[i]["bbox"][1]
+        yolo_data = []
+        for i in range(len(anns)):
+            cat = anns[i]["category_id"] - 1
+            xmin = anns[i]["bbox"][0]
+            ymin = anns[i]["bbox"][1]
+            xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
+            ymax = anns[i]["bbox"][3] + anns[i]["bbox"][1]
 
-        #     x = (xmin + xmax)/2
-        #     y = (ymin + ymax)/2
+            x = (xmin + xmax)/2
+            y = (ymin + ymax)/2
 
-        #     w = xmax - xmin
-        #     h = ymax - ymin
+            w = xmax - xmin
+            h = ymax - ymin
 
-        #     x /= width
-        #     w /= width
-        #     y /= height
-        #     h /= height
+            x /= width
+            w /= width
+            y /= height
+            h /= height
             
-        #     yolo_data.append([cat, x, y, w, h])
+            yolo_data.append([cat, x, y, w, h])
             
-        # yolo_data = np.array(yolo_data)
+        yolo_data = np.array(yolo_data)
         
-        # os.makedirs(OUTPUT_PATH, exist_ok=True)
+        os.makedirs(OUTPUT_PATH, exist_ok=True)
         
-        # # save labels
-        # np.savetxt(
-        #     os.path.join(OUTPUT_PATH, f"labels/{data_type}/{filename}"),
-        #     yolo_data,
-        #     fmt=["%d", "%f", "%f", "%f", "%f"]
-        # )
+        # save labels
+        np.savetxt(
+            os.path.join(OUTPUT_PATH, f"labels/{data_type}/{filename}"),
+            yolo_data,
+            fmt=["%d", "%f", "%f", "%f", "%f"]
+        )
         
-        # #save iamges
-        # imageio.imwrite(os.path.join(OUTPUT_PATH, f'images/{data_type}/{image_name}'), img)
+        #save iamges
+        imageio.imwrite(os.path.join(OUTPUT_PATH, f'images/{data_type}/{image_name}'), img)
         
         
         # deeplab bbox version
-        # for i in range(len(anns)):
-        #     xmin = anns[i]["bbox"][0]
-        #     ymin = anns[i]["bbox"][1]
-        #     xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
-        #     ymax = anns[i]["bbox"][3] + anns[i]["bbox"][1]
+        for i in range(len(anns)):
+            xmin = anns[i]["bbox"][0]
+            ymin = anns[i]["bbox"][1]
+            xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
+            ymax = anns[i]["bbox"][3] + anns[i]["bbox"][1]
 
-        #     base = 10
-        #     xmin = xmin - base if (xmin - base) >= 0 else 0
-        #     ymin = ymin - base if (ymin - base) >= 0 else 0
-        #     xmax = xmax + base if (xmax + base) <= width else width
-        #     ymax = ymax + base if (ymax + base) <= height else height
+            base = 10
+            xmin = xmin - base if (xmin - base) >= 0 else 0
+            ymin = ymin - base if (ymin - base) >= 0 else 0
+            xmax = xmax + base if (xmax + base) <= width else width
+            ymax = ymax + base if (ymax + base) <= height else height
             
-        #     sub_image = img[int(ymin):int(ymax), int(xmin):int(xmax), :]
-        #     mask = coco.annToMask(anns[i]) * 255.
-        #     mask = mask[int(ymin):int(ymax), int(xmin):int(xmax)]
-        #     #save images
-        #     imageio.imwrite(os.path.join(SEG_PATH_SUB, f'images/{data_type}/{image_name[:-4]}_{i}.jpg'), sub_image.astype(np.uint8))
-        #     #save masks
-        #     imageio.imwrite(os.path.join(SEG_PATH_SUB, f'masks/{data_type}/{image_name[:-4]}_{i}.jpg'), mask.astype(np.uint8))
+            sub_image = img[int(ymin):int(ymax), int(xmin):int(xmax), :]
+            mask = coco.annToMask(anns[i]) * 255.
+            mask = mask[int(ymin):int(ymax), int(xmin):int(xmax)]
+            #save images
+            imageio.imwrite(os.path.join(SEG_PATH_SUB, f'images/{data_type}/{image_name[:-4]}_{i}.jpg'), sub_image.astype(np.uint8))
+            #save masks
+            imageio.imwrite(os.path.join(SEG_PATH_SUB, f'masks/{data_type}/{image_name[:-4]}_{i}.jpg'), mask.astype(np.uint8))
 
         # deeplab full img version
         mask_all = np.zeros((height, width))
