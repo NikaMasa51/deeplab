@@ -1,8 +1,8 @@
-img_dir = './data/segmentation_full/images'
-mask_dir ='./data/segmentation_full/masks'
+# img_dir = './data/segmentation_full/images'
+# mask_dir ='./data/segmentation_full/masks'
+img_dir = '../data/segmentation_sub/images'
+mask_dir ='../data/segmentation_sub/masks'
 out_dir = './runs'
-# img_dir = '../data/segmentation/images'
-# mask_dir ='../data/segmentation/masks'
 n_epochs = 100
 n_classes = 2
 # classes = ['Broccoli']
