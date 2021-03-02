@@ -82,7 +82,7 @@ def process_data(images, batch_size=8, data_type="train"):
         
         
         # deeplab bbox version
-        for i in range(len(anns)//batch_size*batch_size,): # バッチサイズの考慮
+        for i in range(len(anns)//batch_size*batch_size): # バッチサイズの考慮
             xmin = anns[i]["bbox"][0]
             ymin = anns[i]["bbox"][1]
             xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
