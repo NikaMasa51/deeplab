@@ -24,7 +24,7 @@ os.makedirs(os.path.join(SEG_PATH_SUB, 'masks'), exist_ok=True)
 os.makedirs(os.path.join(OUTPUT_PATH, 'images'), exist_ok=True)
 os.makedirs(os.path.join(OUTPUT_PATH, 'labels'), exist_ok=True)
 
-def process_data(images, data_type="train"):
+def process_data(images, batch_size=8, data_type="train"):
     os.makedirs(os.path.join(SEG_PATH_FULL, f'images/{data_type}/'), exist_ok=True)
     os.makedirs(os.path.join(SEG_PATH_FULL, f'masks/{data_type}/'), exist_ok=True)
     os.makedirs(os.path.join(SEG_PATH_SUB, f'images/{data_type}/'), exist_ok=True)
@@ -82,7 +82,7 @@ def process_data(images, data_type="train"):
         
         
         # deeplab bbox version
-        for i in range(len(anns)):
+        for i in range(len(anns)//batch_size*batch_size,): # バッチサイズの考慮
             xmin = anns[i]["bbox"][0]
             ymin = anns[i]["bbox"][1]
             xmax = anns[i]["bbox"][2] + anns[i]["bbox"][0]
@@ -150,5 +150,5 @@ if __name__ == "__main__":
         shuffle=True        
     )
     
-    process_data(train, data_type="train")
-    process_data(valid, data_type="validation")
+    process_data(train, batch_size, data_type="train")
+    process_data(valid, batch_size, data_type="validation")
